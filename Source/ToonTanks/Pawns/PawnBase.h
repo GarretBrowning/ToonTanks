@@ -8,6 +8,7 @@
 
 class UCapsuleComponent;
 class AProjectileBase;
+class UHealthComponent;
 
 UCLASS()
 class TOONTANKS_API APawnBase : public APawn
@@ -25,10 +26,16 @@ private:
 	UStaticMeshComponent* TurretMesh; // Turret Mesh for both Tank & A.I.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USceneComponent* ProjectileSpawnPoint; // Collection of data to present visual representation of where the projectile spawns from.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* HealthComponent;
+
 
 	// Variables:
 	UPROPERTY(EditAnywhere, BlueprintReadONly, Category = "Projectile Type", meta = (AllowPrivateAccess = "true"));
 	TSubclassOf<AProjectileBase> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Effects");
+	UParticleSystem* DeathParticle;
  
 public:
 	// Sets default values for this pawn's properties

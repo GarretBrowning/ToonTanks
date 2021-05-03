@@ -3,6 +3,8 @@
 #include "PawnBase.h"
 #include "Components/CapsuleComponent.h"
 #include "ToonTanks/Actors/ProjectileBase.h"
+#include "ToonTanks/Components/HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -21,14 +23,13 @@ APawnBase::APawnBase()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component")); // No requirement for a transform, no setup attachment needed.
 }
 
 void APawnBase::RotateTurret(FVector LookAtTarget) 
 {
-	// Update TurretMesh rotation to face towards the lookAtTarget passed in from Child Classes.
-	// TurretMesh->SetWorldRotation()...
-
-	// We want to be able to look only along the Horizontal Azis:
+	// We want to be able to look only along the Horizontal Axis:
 	FVector LookAtTargetCleaned = FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z);
 	FVector StartLocation = TurretMesh->GetComponentLocation();
 
@@ -38,9 +39,6 @@ void APawnBase::RotateTurret(FVector LookAtTarget)
 
 void APawnBase::Fire() 
 {
-	// FVector SpawnLocation = ProjectileMesh->GetSpawnLocation();
-	// FRotation SpawnRotation;
-
 	// Get ProjectileSpawnPoint Location && Rotation -> Spawn Projectile class at Location firing towards Rotation.
 	if (ProjectileClass)
 	{
@@ -57,6 +55,8 @@ void APawnBase::HandleDestruction()
 {
 	// --- Universal functionality ---
 	// Play death effects particle, sound and camera shake.
+
+	UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticle, GetActorLocation());
 
 	// --- Then do Child overrides ---
 	// -- PawnTurret - Inform GameMode Turret died -> Then Destroy() self.
